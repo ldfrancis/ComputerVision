@@ -12,15 +12,17 @@ import numpy as np
 # Reset the graph
 tf.reset_default_graph()
 
+
+
 # Start interactive session
 sess = tf.InteractiveSession()
 
 # load, reshape, and normalize our "content" image (the Louvre museum picture):
-content_image = scipy.misc.imread("images/louvre_small.jpg")
+content_image = scipy.misc.imread(cwd+"images/louvre_small.jpg")
 content_image = reshape_and_normalize_image(content_image)
 
 #  load, reshape and normalize our "style" image (Claude Monet's painting):
-style_image = scipy.misc.imread("images/monet.jpg")
+style_image = scipy.misc.imread(cwd+"images/monet.jpg")
 style_image = reshape_and_normalize_image(style_image)
 
 # instantiate the generated image as noise
@@ -28,7 +30,7 @@ generated_image = generate_noise_image(content_image)
 imshow(generated_image[0])
 
 # load the vgg19 model
-model = load_vgg_model("pretrained-model/imagenet-vgg-verydeep-19.mat")
+model = load_vgg_model(cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat")
 
 
 # compute the content cost:
@@ -100,9 +102,9 @@ def model_nn(sess = sess, input_image = generated_image, num_iterations = 200):
             print("style cost = " + str(Js))
             
             # save current generated image in the "/output" directory
-            save_image("output/" + str(i) + ".png", generated_image)
+            save_image(cwd+"output/" + str(i) + ".png", generated_image)
     
     # save last generated image
-    save_image('output/generated_image.jpg', generated_image)
+    save_image(cwd+'output/generated_image.jpg', generated_image)
     
     return generated_image

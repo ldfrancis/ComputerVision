@@ -4,7 +4,7 @@ import scipy.io
 import scipy.misc
 from NeuralStyleTransfer import *
 from .utils import *   
-from .utils import download_file
+from .utils import load_vgg_model
 
 import tensorflow as tf
 import numpy as np

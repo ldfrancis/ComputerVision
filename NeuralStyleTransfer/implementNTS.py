@@ -14,7 +14,7 @@ tf.reset_default_graph()
 
 cwd = os.path.realpath(__file__)
 cwd = cwd.split('/')[:-1]
-cwd = '/'.join(cwd)
+cwd = '/'.join(cwd) + '/'
 print(cwd)
 
 

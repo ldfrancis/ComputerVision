@@ -78,6 +78,7 @@ optimizer = tf.train.AdamOptimizer(2.0)
 train_step = optimizer.minimize(J)
 
 
+print("model_nn definition reached")
 def model_nn(sess = sess, input_image = generated_image, num_iterations = 200):
     
     # Initialize global variables (you need to run the session on the initializer)

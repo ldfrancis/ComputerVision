@@ -181,8 +181,8 @@ def download_file(filename, url):
     
     # Download the file from `url` and save it locally under `file_name`:
     print("downloading...")
-    with urllib.request.urlopen(url) as response, open(filename, 'wb') as out_file:
-        shutil.copyfileobj(response, out_file)
+    
+    urllib.urlretrieve(url, filename)
 
     print("*done*")
 

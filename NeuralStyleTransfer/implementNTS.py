@@ -12,7 +12,7 @@ import numpy as np
 # Reset the graph
 tf.reset_default_graph()
 
-cwd = sys.path
+cwd = os.path.realpath(__file__)
 print(cwd)
 
 

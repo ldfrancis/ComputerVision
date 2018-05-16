@@ -3,6 +3,7 @@ import sys
 import scipy.io
 import scipy.misc
 from .utils import *   
+from .utils import download_if_not_exists
 from NeuralStyleTransfer import *
 
 import tensorflow as tf

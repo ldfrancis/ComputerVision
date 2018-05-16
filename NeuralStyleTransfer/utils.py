@@ -9,6 +9,7 @@ from matplotlib.pyplot import imshow
 from PIL import Image
 
 import urllib.request
+import urllib
 import shutil
 
 import requests

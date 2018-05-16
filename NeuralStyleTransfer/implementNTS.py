@@ -68,7 +68,7 @@ J_content = compute_content_cost(a_C, a_G)
 sess.run(model['input'].assign(style_image))
 
 # Compute the style cost
-J_style = compute_style_cost(model, STYLE_LAYERS)
+J_style = compute_style_cost(model, STYLE_LAYERS, sess)
 
 # Total cost
 J = total_cost(J_content, J_style)

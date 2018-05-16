@@ -87,7 +87,7 @@ def compute_layer_style_cost(a_S, a_G):
 
 
 
-def compute_style_cost(model, STYLE_LAYERS):
+def compute_style_cost(model, STYLE_LAYERS, sess):
     """
     Computes the overall style cost from several chosen layers
     

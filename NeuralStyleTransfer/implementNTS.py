@@ -117,4 +117,11 @@ def model_nn(sess = sess, input_image = generated_image, num_iterations = 200):
     # save last generated image
     save_image(cwd+'output/generated_image.jpg', generated_image)
     
-    return generated_image
+    # Un-normalize the image so that it looks good
+    image = generated_image + CONFIG.MEANS
+    
+    # Clip and Save the image
+    image = np.clip(image[0], 0, 255).astype('uint8')
+    
+
+    return image

@@ -13,6 +13,8 @@ import numpy as np
 tf.reset_default_graph()
 
 cwd = sys.path
+print(cwd)
+
 
 # Start interactive session
 sess = tf.InteractiveSession()

@@ -62,7 +62,7 @@ optimizer = tf.train.AdamOptimizer(2.0)
 train_step = optimizer.minimize(J)
 
 
-def model_nn(sess, input_image, num_iterations = 200):
+def model_nn(sess = sess, input_image = generated_image, num_iterations = 200):
     
     # Initialize global variables (you need to run the session on the initializer)
     ### START CODE HERE ### (1 line)
@@ -101,6 +101,3 @@ def model_nn(sess, input_image, num_iterations = 200):
     save_image('output/generated_image.jpg', generated_image)
     
     return generated_image
-
-
-model_nn(sess, generated_image)

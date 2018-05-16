@@ -155,6 +155,8 @@ def load_vgg_model(path):
     
     return graph
 
+def aaa():
+    pass
 
 def download_file(filename, url):
     """

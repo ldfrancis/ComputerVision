@@ -202,6 +202,7 @@ def download_file(filename, url):
         # Write response data to file
         for block in response.iter_content(4096):
             fout.write(block)
+
 def download_if_not_exists(filename, url):
     """
     Download a URL to a file if the file

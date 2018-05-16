@@ -12,7 +12,7 @@ import numpy as np
 # Reset the graph
 tf.reset_default_graph()
 
-
+cwd = os.getcwd()
 
 # Start interactive session
 sess = tf.InteractiveSession()

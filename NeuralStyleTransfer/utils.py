@@ -220,4 +220,3 @@ def save_image(path, image):
     # Clip and Save the image
     image = np.clip(image[0], 0, 255).astype('uint8')
     scipy.misc.imsave(path, image)
-

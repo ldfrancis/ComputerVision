@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import imshow
 from PIL import Image
 
+import urllib.request
+import shutil
 
 import requests
 import os.path
@@ -158,16 +160,26 @@ def load_vgg_model(path):
 def aaa():
     pass
 
+    
+print("*done*")
+
 def download_file(filename, url):
     """
     Download an URL to a file
     """
-    with open(filename, 'wb') as fout:
+    """with open(filename, 'wb') as fout:
         response = requests.get(url, stream=True)
         response.raise_for_status()
         # Write response data to file
         for block in response.iter_content(4096):
-            fout.write(block)
+            fout.write(block)"""
+    
+    # Download the file from `url` and save it locally under `file_name`:
+    print("downloading...")
+    with urllib.request.urlopen(url) as response, open(filename, 'wb') as out_file:
+        shutil.copyfileobj(response, out_file)
+
+    print("*done*")
 
 def download_if_not_exists(filename, url):
     """

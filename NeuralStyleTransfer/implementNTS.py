@@ -2,9 +2,9 @@ import os
 import sys
 import scipy.io
 import scipy.misc
+from NeuralStyleTransfer import *
 from .utils import *   
 from .utils import download_file
-from NeuralStyleTransfer import *
 
 import tensorflow as tf
 import numpy as np

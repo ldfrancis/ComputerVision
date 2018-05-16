@@ -2,7 +2,7 @@ import os
 import sys
 import scipy.io
 import scipy.misc
-from utils import *   
+from .utils import *   
 from NeuralStyleTransfer import *
 
 import tensorflow as tf

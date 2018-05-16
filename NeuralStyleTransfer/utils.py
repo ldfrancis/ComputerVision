@@ -9,6 +9,9 @@ from matplotlib.pyplot import imshow
 from PIL import Image
 
 
+import requests
+import os.path
+
 import numpy as np
 import tensorflow as tf
 
@@ -188,3 +191,27 @@ def save_image(path, image):
     # Clip and Save the image
     image = np.clip(image[0], 0, 255).astype('uint8')
     scipy.misc.imsave(path, image)
+
+def download_file(filename, url):
+    """
+    Download an URL to a file
+    """
+    with open(filename, 'wb') as fout:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        # Write response data to file
+        for block in response.iter_content(4096):
+            fout.write(block)
+def download_if_not_exists(filename, url):
+    """
+    Download a URL to a file if the file
+    does not exist already.
+    Returns
+    -------
+    True if the file was downloaded,
+    False if it already existed
+    """
+    if not os.path.exists(filename):
+        download_file(filename, url)
+        return True
+    return False

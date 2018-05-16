@@ -17,6 +17,9 @@ cwd = cwd.split('/')[:-1]
 cwd = '/'.join(cwd) + '/'
 print(cwd)
 
+url = "http://www.vlfeat.org/matconvnet/models/imagenet-vgg-verydeep-19.mat"
+file_name = "pretrained-model/imagenet-vgg-verydeep-19.mat"
+download_file_if_not_exist(file_name, url)
 
 # Start interactive session
 sess = tf.InteractiveSession()

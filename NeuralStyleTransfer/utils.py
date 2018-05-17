@@ -160,9 +160,6 @@ def load_vgg_model(path):
 def aaa():
     pass
 
-    
-print("*done*")
-
 import os
 import urllib
 

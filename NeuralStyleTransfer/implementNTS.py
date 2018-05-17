@@ -119,6 +119,8 @@ def init(c_image = cimage, s_image=simage):
                 
                 # save current generated image in the "/output" directory
                 save_image(cwd+"output/" + str(i) + ".png", generated_image)
+
+            print(i)
         
         # save last generated image
         save_image(cwd+'output/generated_image.jpg', generated_image)

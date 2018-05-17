@@ -10,25 +10,23 @@ from .utils import *
 import tensorflow as tf
 import numpy as np
 
-
-
-
-# Reset the graph
-tf.reset_default_graph()
-
-cwd = os.path.realpath(__file__)
-cwd = cwd.split('/')[:-1]
-cwd = '/'.join(cwd) + '/'
-
-url = "http://www.vlfeat.org/matconvnet/models/imagenet-vgg-verydeep-19.mat"
-file_name = cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat"
-download_if_not_exists(file_name, url)
-
 cimage = cwd+"images/louvre_small.jpg"
 simage = cwd+"images/monet.jpg"
 
 
 def init(c_image = cimage, s_image=simage):
+    
+    # Reset the graph
+    tf.reset_default_graph()
+
+    cwd = os.path.realpath(__file__)
+    cwd = cwd.split('/')[:-1]
+    cwd = '/'.join(cwd) + '/'
+
+    url = "http://www.vlfeat.org/matconvnet/models/imagenet-vgg-verydeep-19.mat"
+    file_name = cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat"
+    download_if_not_exists(file_name, url)
+
     # Start interactive session
     sess = tf.InteractiveSession()
 

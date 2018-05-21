@@ -15,12 +15,12 @@ simage = cwd+"images/monet.jpg"
 
 url = "http://www.vlfeat.org/matconvnet/models/imagenet-vgg-verydeep-19.mat"
 file_name = cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat"
-download_if_not_exists(file_name, url)
-
 
 
 def init(num_iterations = 200, c_image = cimage, s_image=simage):
     
+	download_if_not_exists(file_name, url)
+	
     # Reset the graph
     tf.reset_default_graph()
 

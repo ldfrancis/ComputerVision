@@ -80,7 +80,7 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     train_step = optimizer.minimize(J)
 
 
-    print("model_nn definition reached")
+    #print("model_nn definition reached")
     
     #return sess, generated_image, 200, model, train_step, J, J_content, J_style
 
@@ -101,18 +101,18 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
         model['input'].assign(input_image)
         ### END CODE HERE ###
         
-        print("kjkjkjkj")
+        
         for i in range(num_iterations):
-            print(i)
+            
             # Run the session on the train_step to minimize the total cost
-            ### START CODE HERE ### (1 line)
+            
             sess.run(train_step)
-            ### END CODE HERE ###
+            
             
             # Compute the generated image by running the session on the current model['input']
-            ### START CODE HERE ### (1 line)
+            
             generated_image = sess.run(model['input'])
-            ### END CODE HERE ###
+            
 
             # Print every 20 iteration.
             if i%20 == 0:

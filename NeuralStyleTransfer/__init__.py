@@ -1,5 +1,5 @@
 """
-This code is inspired by the deeplearning.ai CNN course's week 4 assignments
+This code was inspired by the deeplearning.ai CNN course's week 4 assignments
 
 """
 
@@ -126,7 +126,7 @@ def compute_style_cost(model, STYLE_LAYERS, sess):
     return J_style
 
 
-def total_cost(J_content, J_style, alpha = 10, beta = 40):
+def total_cost(J_content, J_style, alpha = 40, beta = 20):
     """
     Computes the total cost function
     

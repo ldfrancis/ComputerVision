@@ -1,3 +1,8 @@
+"""
+This code was inspired by the deeplearning.ai CNN course's week 4 assignments
+
+"""
+
 import os
 import sys
 import scipy.io

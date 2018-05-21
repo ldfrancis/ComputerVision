@@ -126,7 +126,7 @@ def compute_style_cost(model, STYLE_LAYERS, sess):
     return J_style
 
 
-def total_cost(J_content, J_style, alpha = 40, beta = 20):
+def total_cost(J_content, J_style, alpha = 5, beta = 100):
     """
     Computes the total cost function
     

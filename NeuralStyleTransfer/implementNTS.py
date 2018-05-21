@@ -13,20 +13,18 @@ import numpy as np
 cimage = cwd+"images/louvre_small.jpg"
 simage = cwd+"images/monet.jpg"
 
+url = "http://www.vlfeat.org/matconvnet/models/imagenet-vgg-verydeep-19.mat"
+file_name = cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat"
+download_if_not_exists(file_name, url)
 
-def init(c_image = cimage, s_image=simage):
+
+
+def init(num_iterations = 200, c_image = cimage, s_image=simage):
     
     # Reset the graph
     tf.reset_default_graph()
 
-    cwd = os.path.realpath(__file__)
-    cwd = cwd.split('/')[:-1]
-    cwd = '/'.join(cwd) + '/'
-
-    url = "http://www.vlfeat.org/matconvnet/models/imagenet-vgg-verydeep-19.mat"
-    file_name = cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat"
-    download_if_not_exists(file_name, url)
-
+    
     # Start interactive session
     sess = tf.InteractiveSession()
 
@@ -39,8 +37,8 @@ def init(c_image = cimage, s_image=simage):
     style_image = reshape_and_normalize_image(style_image)
 
     # instantiate the generated image as noise
-    generated_image = generate_noise_image(content_image)
-    imshow(generated_image[0])
+    
+    #imshow(generated_image[0])
 
     # load the vgg19 model
     model = load_vgg_model(cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat")
@@ -83,8 +81,16 @@ def init(c_image = cimage, s_image=simage):
 
 
     print("model_nn definition reached")
-    def model_nn(sess = sess, input_image = generated_image, num_iterations = 200):
+    
+    #return sess, generated_image, 200, model, train_step, J, J_content, J_style
+
+
+    def model_nn():
         
+        #sess, input_image, num_iterations, model, train_step, J, J_content, J_style = input_value
+        generated_image = generate_noise_image(content_image)
+        input_image = generated_image
+
         # Initialize global variables (you need to run the session on the initializer)
         ### START CODE HERE ### (1 line)
         sess.run(tf.global_variables_initializer())
@@ -95,8 +101,9 @@ def init(c_image = cimage, s_image=simage):
         model['input'].assign(input_image)
         ### END CODE HERE ###
         
+        print("kjkjkjkj")
         for i in range(num_iterations):
-        
+            print(i)
             # Run the session on the train_step to minimize the total cost
             ### START CODE HERE ### (1 line)
             sess.run(train_step)
@@ -115,11 +122,12 @@ def init(c_image = cimage, s_image=simage):
                 print("content cost = " + str(Jc))
                 print("style cost = " + str(Js))
                 
+                
+                
+                
                 # save current generated image in the "/output" directory
                 save_image(cwd+"output/" + str(i) + ".png", generated_image)
 
-            print(i)
-        
         # save last generated image
         save_image(cwd+'output/generated_image.jpg', generated_image)
         

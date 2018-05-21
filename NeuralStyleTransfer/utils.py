@@ -17,7 +17,8 @@ import os.path
 import numpy as np
 import tensorflow as tf
 
-cwd = os.getcwd()
+cwd = os.path.dirname(os.path.abspath(__file__))
+cwd += "/"
 
 class CONFIG:
     IMAGE_WIDTH = 400

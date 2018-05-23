@@ -8,11 +8,11 @@ import numpy as np
 
 # wieghts used to compute the syle cost using results from these layers
 STYLE_LAYERS = [
-    ('conv1_1', 0.2),
-    ('conv2_1', 0.2),
-    ('conv3_1', 0.2),
-    ('conv4_1', 0.2),
-    ('conv5_1', 0.2)]
+    ('conv1_1', 0.5),
+    ('conv2_1', 1.0),
+    ('conv3_1', 1.5),
+    ('conv4_1', 3.0),
+    ('conv5_1', 4.0)]
 
 
 
@@ -35,7 +35,7 @@ def compute_content_cost(a_C, a_G):
     a_G_unrolled = tf.reshape(a_G, [-1, n_C])
     
     # compute the cost with tensorflow
-    J_content = (1/(4*n_C*n_W*n_H))*(tf.reduce_sum(tf.square(tf.subtract(a_C_unrolled, a_G_unrolled))))
+    J_content = (1/(4*n_C*n_W*n_H))*(tf.reduce_sum(tf.pow(a_C-a_G, 2)))
     
     
     return J_content

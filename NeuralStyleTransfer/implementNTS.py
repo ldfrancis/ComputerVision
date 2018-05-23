@@ -55,8 +55,6 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     # Assign the content image to be the input of the VGG model.  
     sess.run(model['input'].assign(content_image))
 
-    # Select the output tensor of layer conv4_2
-    out = model['conv4_2']
 
     # Set a_C to be the hidden layer activation from the layer we have selected
     a_C = sess.run(out)
@@ -64,7 +62,7 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     # Set a_G to be the hidden layer activation from same layer. Here, a_G references model['conv4_2'] 
     # and isn't evaluated yet. Later in the code, we'll assign the image G as the model input, so that
     # when we run the session, this will be the activations drawn from the appropriate layer, with G as input.
-    a_G = out
+    a_G = model['conv4_2']
 
     # Compute the content cost
     J_content = compute_content_cost(a_C, a_G)

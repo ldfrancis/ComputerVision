@@ -94,9 +94,8 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     def model_nn():
         
         #sess, input_image, num_iterations, model, train_step, J, J_content, J_style = input_value
-        generated_image = generate_noise_image(content_image)
-        input_image = generated_image
-
+        input_image = generate_noise_image(content_image)
+        
         # Initialize global variables (you need to run the session on the initializer)
         ### START CODE HERE ### (1 line)
         sess.run(tf.global_variables_initializer())

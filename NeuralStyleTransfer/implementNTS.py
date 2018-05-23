@@ -49,8 +49,11 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     # load the vgg19 model
     model = load_vgg_model(cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat")
 
+    # Assign the input of the model to be the "style" image 
+    sess.run(model['input'].assign(style_image))
 
-    # compute the content cost:
+    # Compute the style cost
+    J_style = compute_style_cost(model, STYLE_LAYERS, sess)
 
     # Assign the content image to be the input of the VGG model.  
     sess.run(model['input'].assign(content_image))
@@ -68,13 +71,6 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
 
     # Compute the content cost
     J_content = compute_content_cost(a_C, a_G)
-
-
-    # Assign the input of the model to be the "style" image 
-    sess.run(model['input'].assign(style_image))
-
-    # Compute the style cost
-    J_style = compute_style_cost(model, STYLE_LAYERS, sess)
 
     # Total cost
     J = total_cost(J_content, J_style)

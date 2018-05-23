@@ -31,6 +31,7 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
 
     
     # Start interactive session
+    tf.InteractiveSession.close()
     sess = tf.InteractiveSession()
 
     # load, reshape, and normalize our "content" image (the Louvre museum picture):
@@ -79,7 +80,7 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     J = total_cost(J_content, J_style)
 
     # define optimizer 
-    optimizer = tf.train.AdamOptimizer(0.005)
+    optimizer = tf.train.AdamOptimizer(2.0)
 
     # define train_step 
     train_step = optimizer.minimize(J)

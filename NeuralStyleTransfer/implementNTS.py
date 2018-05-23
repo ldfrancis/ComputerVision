@@ -31,7 +31,7 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
 
     
     # Start interactive session
-    tf.InteractiveSession.close()
+    
     sess = tf.InteractiveSession()
 
     # load, reshape, and normalize our "content" image (the Louvre museum picture):
@@ -133,7 +133,10 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
                 
                 # save current generated image in the "/output" directory
                 save_image(cwd+"output/" + str(i) + ".png", generated_image)
+        
+        sess.close()
 
+        
         # save last generated image
         save_image(cwd+'output/generated_image.jpg', generated_image)
         

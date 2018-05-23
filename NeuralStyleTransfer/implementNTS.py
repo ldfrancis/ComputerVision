@@ -318,8 +318,8 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         sess.run(model['input'].assign(input_image))
         for it in range(iterations): 
             sess.run(train_step)
-            if it%100 == 0:
-                # Print every 100 iteration.
+            if it%20 == 0:
+                '''# Print every 20 iteration.
                 mixed_image = sess.run(model['input'])
                 print('Iteration %d' % (it))
                 print('sum : ', sess.run(tf.reduce_sum(mixed_image)))
@@ -329,5 +329,24 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
                     os.mkdir(OUTPUT_DIR)
 
                 filename = 'output/%d.png' % (it)
-                save_image(filename, mixed_image)
+                save_image(filename, mixed_image)'''
+
+                Jt, Jc, Js = sess.run([total_loss, content_loss, style_loss])
+                print("Iteration " + str(i) + " :")
+                print("total cost = " + str(Jt))
+                print("content cost = " + str(Jc))
+                print("style cost = " + str(Js))
+                
+                
+                
+                generated_image = sess.run(model['input'])
+                # save current generated image in the "/output" directory
+                save_image(cwd+"output/" + str(i) + ".png", generated_image)
+
+        
+        sess.close()
+
+        
+        # save last generated image
+        save_image(cwd+'output/generated_image.jpg', generated_image)
 

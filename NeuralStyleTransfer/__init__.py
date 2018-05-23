@@ -28,7 +28,7 @@ def compute_content_cost(a_C, a_G):
         J_content -- scalar that you compute using equation 1 above.
     """
     # Retrieve dimensions from a_G
-    m, n_H, n_W, n_C = a_G.get_shape().as_list()
+    m, n_H, n_W, n_C = a_C.get_shape().as_list()
     
     # Reshape a_C and a_G
     a_C_unrolled = tf.reshape(a_C, [-1, n_C])

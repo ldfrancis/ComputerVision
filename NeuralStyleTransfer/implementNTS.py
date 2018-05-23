@@ -53,7 +53,7 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     sess.run(model['input'].assign(style_image))
 
     # Compute the style cost
-    J_style = compute_style_cost(model, STYLE_LAYERS, sess)
+    J_style = style_loss_func(sess, model)
 
     # Assign the content image to be the input of the VGG model.  
     sess.run(model['input'].assign(content_image))
@@ -70,7 +70,7 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     a_G = out
 
     # Compute the content cost
-    J_content = compute_content_cost(a_C, a_G)
+    J_content = content_loss_func(sess, model)
 
     # Total cost
     J = total_cost(J_content, J_style)

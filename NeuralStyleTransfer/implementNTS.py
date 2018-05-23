@@ -79,7 +79,7 @@ def init(num_iterations = 200, c_image = cimage, s_image=simage):
     J = total_cost(J_content, J_style)
 
     # define optimizer 
-    optimizer = tf.train.AdamOptimizer(2.0)
+    optimizer = tf.train.AdamOptimizer(0.005)
 
     # define train_step 
     train_step = optimizer.minimize(J)

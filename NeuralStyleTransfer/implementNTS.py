@@ -1,5 +1,7 @@
 """
-This code was inspired by the deeplearning.ai CNN course's week 4 assignments
+This code was inspired by the deeplearning.ai CNN course's week 4 assignments.
+
+And it uses the implementation provided by http://www.chioka.in/tensorflow-implementation-neural-algorithm-of-artistic-style
 
 """
 

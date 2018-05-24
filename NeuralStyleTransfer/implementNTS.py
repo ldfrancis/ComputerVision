@@ -316,9 +316,9 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
 
         sess.run(tf.initialize_all_variables())
         sess.run(model['input'].assign(input_image))
-        for it in range(iterations): 
+        for i in range(iterations): 
             sess.run(train_step)
-            if it%20 == 0:
+            if i%20 == 0:
                 '''# Print every 20 iteration.
                 mixed_image = sess.run(model['input'])
                 print('Iteration %d' % (it))

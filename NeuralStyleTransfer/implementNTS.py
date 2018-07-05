@@ -7,6 +7,7 @@ And it uses the implementation provided by http://www.chioka.in/tensorflow-imple
 
 import os
 import sys
+import time
 import numpy as np
 import scipy.io
 import scipy.misc
@@ -30,7 +31,7 @@ STYLE_IMAGE = simage
 # Content image to use.
 # CONTENT_IMAGE = 'images/hong_kong_2.jpg'
 CONTENT_IMAGE = cimage
-# Image dimensions constants. 
+# Image dimensions constants.
 IMAGE_WIDTH = 800
 IMAGE_HEIGHT = 600
 COLOR_CHANNELS = 3
@@ -91,7 +92,7 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
         0 is conv1_1 (3, 3, 3, 64)
         1 is relu
         2 is conv1_2 (3, 3, 64, 64)
-        3 is relu    
+        3 is relu
         4 is maxpool
         5 is conv2_1 (3, 3, 64, 128)
         6 is relu
@@ -132,11 +133,11 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
         41 is fullyconnected (1, 1, 4096, 1000)
         42 is softmax
     """
-    
+
     vgg = scipy.io.loadmat(path)
 
     vgg_layers = vgg['layers']
-    
+
     def _weights(layer, expected_layer_name):
         """
         Return the weights and bias from the VGG model for a given layer.
@@ -204,7 +205,7 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
     graph['conv5_3']  = _conv2d_relu(graph['conv5_2'], 32, 'conv5_3')
     graph['conv5_4']  = _conv2d_relu(graph['conv5_3'], 34, 'conv5_4')
     graph['avgpool5'] = _avgpool(graph['conv5_4'])
-    
+
     return graph
 
 
@@ -221,7 +222,7 @@ def content_loss_func(sess, model):
         M = p.shape[1] * p.shape[2]
         # Interestingly, the paper uses this form instead:
         #
-        #   0.5 * tf.reduce_sum(tf.pow(x - p, 2)) 
+        #   0.5 * tf.reduce_sum(tf.pow(x - p, 2))
         #
         # But this form is very slow in "painting" and thus could be missing
         # out some constants (from what I see in other source code), so I'll
@@ -277,7 +278,7 @@ def setImageDim(width = 400, height = 300):
     global IMAGE_HEIGHT, IMAGE_WIDTH
     IMAGE_HEIGHT = height
     IMAGE_WIDTH = width
-    
+
 
 def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE):
     with tf.Session() as sess:
@@ -294,7 +295,7 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         # which will be the basis for the algorithm to "paint".
         input_image = generate_noise_image(content_image,IMAGE_HEIGHT,IMAGE_WIDTH)
 
-        sess.run(tf.initialize_all_variables())
+        sess.run(tf.global_variables_initializer())
         # Construct content_loss using content_image.
         sess.run(model['input'].assign(content_image))
         content_loss = content_loss_func(sess, model)
@@ -316,11 +317,13 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         optimizer = tf.train.AdamOptimizer(2.0)
         train_step = optimizer.minimize(total_loss)
 
-        sess.run(tf.initialize_all_variables())
+        start = time.time()
+
+        sess.run(tf.global_variables_initializer())
         sess.run(model['input'].assign(input_image))
-        for i in range(iterations): 
+        for i in range(iterations):
             sess.run(train_step)
-            if i%20 == 0:
+            if (i+1) % 20 == 0:
                 '''# Print every 20 iteration.
                 mixed_image = sess.run(model['input'])
                 print('Iteration %d' % (it))
@@ -334,21 +337,18 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
                 save_image(filename, mixed_image)'''
 
                 Jt, Jc, Js = sess.run([total_loss, content_loss, style_loss])
-                print("Iteration " + str(i) + " :")
+                print("Iteration " + str(i+1) + " :")
                 print("total cost = " + str(Jt))
                 print("content cost = " + str(Jc))
                 print("style cost = " + str(Js))
-                
-                
-                
+
                 generated_image = sess.run(model['input'])
                 # save current generated image in the "/output" directory
-                save_image(cwd+"output/" + str(i) + ".png", generated_image)
+                save_image(cwd+"output/" + str(i+1) + ".png", generated_image)
 
-        
+                print("Time elapsed: ", time.time() - start)
+                start = time.time();
         sess.close()
 
-        
         # save last generated image
         save_image(cwd+'output/generated_image.jpg', generated_image)
-

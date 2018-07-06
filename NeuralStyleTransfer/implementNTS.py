@@ -317,10 +317,10 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         optimizer = tf.train.AdamOptimizer(2.0)
         train_step = optimizer.minimize(total_loss)
 
-        start = time.time()
-
         sess.run(tf.global_variables_initializer())
         sess.run(model['input'].assign(input_image))
+
+        tic = time.time()
         for i in range(iterations):
             sess.run(train_step)
             if (i+1) % 20 == 0:
@@ -346,8 +346,8 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
                 # save current generated image in the "/output" directory
                 save_image(cwd+"output/" + str(i+1) + ".png", generated_image)
 
-                print("Time elapsed: ", time.time() - start)
-                start = time.time();
+                print("Time elapsed: ", time.time() - tic)
+                tic = time.time();
         sess.close()
 
         # save last generated image

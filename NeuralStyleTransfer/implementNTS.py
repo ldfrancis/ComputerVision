@@ -51,7 +51,7 @@ ALPHA = 100
 
 MEAN_VALUES = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3))
 
-def generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio = NOISE_RATIO):
+def generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio):
     """
     Returns a noise image intermixed with the content image at a certain ratio.
     """
@@ -280,7 +280,7 @@ def setImageDim(width = 400, height = 300):
     IMAGE_WIDTH = width
 
 
-def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE):
+def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE, noise_ratio=NOISE_RATIO):
     with tf.Session() as sess:
 
         download_if_not_exists(file_name, url)
@@ -293,7 +293,7 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
 
         # Generate the white noise and content presentation mixed image
         # which will be the basis for the algorithm to "paint".
-        input_image = generate_noise_image(content_image,IMAGE_HEIGHT,IMAGE_WIDTH)
+        input_image = generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio)
 
         sess.run(tf.global_variables_initializer())
         # Construct content_loss using content_image.

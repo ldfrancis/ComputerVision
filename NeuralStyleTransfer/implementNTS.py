@@ -45,11 +45,11 @@ NOISE_RATIO = 0.6
 # Number of iterations to run.
 ITERATIONS = 5000
 # Constant to put more emphasis on content loss.
-BETA = 5
+BETA = 7.5
 # Constant to put more emphasis on style loss.
 ALPHA = 100
 # Constant to put more emphasis on the total variation loss.
-GAMMA = 100
+GAMMA = 1
 
 MEAN_VALUES = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3))
 

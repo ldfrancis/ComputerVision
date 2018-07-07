@@ -333,11 +333,11 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         sess.run(model['input'].assign(input_image))
 
         tic = time.time()
-        for i in range(iterations):
+        for i in range(1, iterations+1):
             sess.run(train_step)
-            if (i+1) % 20 == 0:
+            if i % 20 == 0:
                 Jt, Jc, Js, Jv = sess.run([total_loss, content_loss, style_loss, total_variational_loss])
-                print("Iteration " + str(i+1) + " :")
+                print("Iteration " + str(i) + " :")
                 print("total cost = " + str(Jt))
                 print("content cost = " + str(Jc))
                 print("style cost = " + str(Js))
@@ -345,7 +345,7 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
 
                 generated_image = sess.run(model['input'])
                 # save current generated image in the "/output" directory
-                save_image(cwd+"output/" + str(i+1) + ".png", generated_image)
+                save_image(cwd+"output/" + str(i) + ".png", generated_image)
 
                 print("Time elapsed: ", time.time() - tic)
                 tic = time.time();

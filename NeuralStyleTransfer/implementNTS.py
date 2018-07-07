@@ -290,10 +290,13 @@ def tv_loss_func(sess, model):
     # b = tf.square(x[:, :x.shape[1]-1, :x.shape[2]-1, :] - x[:, :x.shape[1]-1, 1:, :])
     # return tf.reduce_sum(tf.pow(a + b, 1.25))
 
-def setImageDim(width = 400, height = 300):
-    global IMAGE_HEIGHT, IMAGE_WIDTH
+def init(width = 400, height = 300, beta=7.5, alpha=100, gamma=200):
+    global IMAGE_HEIGHT, IMAGE_WIDTH, BETA, ALPHA, GAMMA
     IMAGE_HEIGHT = height
     IMAGE_WIDTH = width
+    BETA = beta
+    ALPHA = alpha
+    GAMMA = gamma
 
 
 def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE, noise_ratio=NOISE_RATIO, pool_type='avg'):

@@ -48,6 +48,8 @@ ITERATIONS = 5000
 BETA = 5
 # Constant to put more emphasis on style loss.
 ALPHA = 100
+# Constant to put more emphasis on the total variation loss.
+GAMMA = 100
 
 MEAN_VALUES = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3))
 
@@ -274,6 +276,12 @@ def style_loss_func(sess, model):
     loss = sum([W[l] * E[l] for l in range(len(layers))])
     return loss
 
+def tv_loss_func(sess, model):
+    x = sess.run(model['input'])
+    a = tf.square(x[:, :a.shape[1]-1, :a.shape[2]-1, :] - x[:, 1:, :a.shape[2]-1, :])
+    a = tf.square(x[:, :a.shape[1]-1, :a.shape[2]-1, :] - x[:, :a.shape[1]-1, 1:, :])
+    return tf.reduce_sum(tf.pow(a + b, 1.25))
+
 def setImageDim(width = 400, height = 300):
     global IMAGE_HEIGHT, IMAGE_WIDTH
     IMAGE_HEIGHT = height
@@ -304,8 +312,11 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         sess.run(model['input'].assign(style_image))
         style_loss = style_loss_func(sess, model)
 
+        sess.run(model['input'].assign(input_image))
+        total_variational_loss = tv_loss_func(sess, model)
+
         # Instantiate equation 7 of the paper.
-        total_loss = BETA * content_loss + ALPHA * style_loss
+        total_loss = BETA * content_loss + ALPHA * style_loss + GAMMA * total_variational_loss
 
         # From the paper: jointly minimize the distance of a white noise image
         # from the content representation of the photograph in one layer of
@@ -318,24 +329,11 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         train_step = optimizer.minimize(total_loss)
 
         sess.run(tf.global_variables_initializer())
-        sess.run(model['input'].assign(input_image))
 
         tic = time.time()
         for i in range(iterations):
             sess.run(train_step)
             if (i+1) % 20 == 0:
-                '''# Print every 20 iteration.
-                mixed_image = sess.run(model['input'])
-                print('Iteration %d' % (it))
-                print('sum : ', sess.run(tf.reduce_sum(mixed_image)))
-                print('cost: ', sess.run(total_loss))
-
-                if not os.path.exists(OUTPUT_DIR):
-                    os.mkdir(OUTPUT_DIR)
-
-                filename = 'output/%d.png' % (it)
-                save_image(filename, mixed_image)'''
-
                 Jt, Jc, Js = sess.run([total_loss, content_loss, style_loss])
                 print("Iteration " + str(i+1) + " :")
                 print("total cost = " + str(Jt))

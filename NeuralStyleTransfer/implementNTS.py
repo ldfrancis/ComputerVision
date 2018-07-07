@@ -329,6 +329,7 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         train_step = optimizer.minimize(total_loss)
 
         sess.run(tf.global_variables_initializer())
+        sess.run(model['input'].assign(input_image))
 
         tic = time.time()
         for i in range(iterations):

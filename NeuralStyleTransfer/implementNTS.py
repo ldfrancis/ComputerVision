@@ -180,6 +180,10 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH, pool_type='avg'):
     def _pool(prev_layer, pool_type):
         """
         Return the pooling layer.
+
+        Tip:
+            use 'avg' for styles like the 'Starry Night'
+            use 'max' for sharper styles
         """
         if pool_type == 'avg':
             return tf.nn.avg_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')

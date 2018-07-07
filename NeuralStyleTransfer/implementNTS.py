@@ -334,11 +334,12 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         for i in range(iterations):
             sess.run(train_step)
             if (i+1) % 20 == 0:
-                Jt, Jc, Js = sess.run([total_loss, content_loss, style_loss])
+                Jt, Jc, Js, Jv = sess.run([total_loss, content_loss, style_loss, total_variational_loss])
                 print("Iteration " + str(i+1) + " :")
                 print("total cost = " + str(Jt))
                 print("content cost = " + str(Jc))
                 print("style cost = " + str(Js))
+                print("total variational loss = ", str(Jv))
 
                 generated_image = sess.run(model['input'])
                 # save current generated image in the "/output" directory

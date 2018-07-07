@@ -83,7 +83,7 @@ def save_image(path, image):
     scipy.misc.imsave(path, image)
 
 
-def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
+def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH, pool_type='avg'):
     """
     Returns a model for the purpose of 'painting' the picture.
     Takes only the convolution layer weights and wrap using the TensorFlow
@@ -177,11 +177,14 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
         """
         return _relu(_conv2d(prev_layer, layer, layer_name))
 
-    def _avgpool(prev_layer):
+    def _pool(prev_layer, pool_type):
         """
-        Return the AveragePooling layer.
+        Return the pooling layer.
         """
-        return tf.nn.avg_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+        if pool_type == 'avg':
+            return tf.nn.avg_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+        else:
+            return tf.nn.max_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
     # Constructs the graph model.
     graph = {}
@@ -191,22 +194,22 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
     graph['avgpool1'] = _avgpool(graph['conv1_2'])
     graph['conv2_1']  = _conv2d_relu(graph['avgpool1'], 5, 'conv2_1')
     graph['conv2_2']  = _conv2d_relu(graph['conv2_1'], 7, 'conv2_2')
-    graph['avgpool2'] = _avgpool(graph['conv2_2'])
+    graph['avgpool2'] = _pool(graph['conv2_2'], pool_type=pool_type)
     graph['conv3_1']  = _conv2d_relu(graph['avgpool2'], 10, 'conv3_1')
     graph['conv3_2']  = _conv2d_relu(graph['conv3_1'], 12, 'conv3_2')
     graph['conv3_3']  = _conv2d_relu(graph['conv3_2'], 14, 'conv3_3')
     graph['conv3_4']  = _conv2d_relu(graph['conv3_3'], 16, 'conv3_4')
-    graph['avgpool3'] = _avgpool(graph['conv3_4'])
+    graph['avgpool3'] = _pool(graph['conv3_4'], pool_type=pool_type)
     graph['conv4_1']  = _conv2d_relu(graph['avgpool3'], 19, 'conv4_1')
     graph['conv4_2']  = _conv2d_relu(graph['conv4_1'], 21, 'conv4_2')
     graph['conv4_3']  = _conv2d_relu(graph['conv4_2'], 23, 'conv4_3')
     graph['conv4_4']  = _conv2d_relu(graph['conv4_3'], 25, 'conv4_4')
-    graph['avgpool4'] = _avgpool(graph['conv4_4'])
+    graph['avgpool4'] = _pool(graph['conv4_4'], pool_type=pool_type)
     graph['conv5_1']  = _conv2d_relu(graph['avgpool4'], 28, 'conv5_1')
     graph['conv5_2']  = _conv2d_relu(graph['conv5_1'], 30, 'conv5_2')
     graph['conv5_3']  = _conv2d_relu(graph['conv5_2'], 32, 'conv5_3')
     graph['conv5_4']  = _conv2d_relu(graph['conv5_3'], 34, 'conv5_4')
-    graph['avgpool5'] = _avgpool(graph['conv5_4'])
+    graph['avgpool5'] = _pool(graph['conv5_4'], pool_type=pool_type)
 
     return graph
 
@@ -289,7 +292,7 @@ def setImageDim(width = 400, height = 300):
     IMAGE_WIDTH = width
 
 
-def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE, noise_ratio=NOISE_RATIO):
+def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE, noise_ratio=NOISE_RATIO, pool_type='avg'):
     with tf.Session() as sess:
 
         download_if_not_exists(file_name, url)
@@ -298,7 +301,7 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         content_image = load_image(content_image)
         style_image = load_image(style_image)
         # Load the model.
-        model = load_vgg_model(cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat", IMAGE_HEIGHT, IMAGE_WIDTH)
+        model = load_vgg_model(cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat", IMAGE_HEIGHT, IMAGE_WIDTH, pool_type)
 
         # Generate the white noise and content presentation mixed image
         # which will be the basis for the algorithm to "paint".

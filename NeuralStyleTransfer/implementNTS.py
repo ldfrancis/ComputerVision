@@ -277,10 +277,11 @@ def style_loss_func(sess, model):
     return loss
 
 def tv_loss_func(sess, model):
-    x = sess.run(model['input'])
-    a = tf.square(x[:, :x.shape[1]-1, :x.shape[2]-1, :] - x[:, 1:, :x.shape[2]-1, :])
-    b = tf.square(x[:, :x.shape[1]-1, :x.shape[2]-1, :] - x[:, :x.shape[1]-1, 1:, :])
-    return tf.reduce_sum(tf.pow(a + b, 1.25))
+    return tf.image.total_variation(sess.run(model['input']))
+    # x = sess.run(model['input'])
+    # a = tf.square(x[:, :x.shape[1]-1, :x.shape[2]-1, :] - x[:, 1:, :x.shape[2]-1, :])
+    # b = tf.square(x[:, :x.shape[1]-1, :x.shape[2]-1, :] - x[:, :x.shape[1]-1, 1:, :])
+    # return tf.reduce_sum(tf.pow(a + b, 1.25))
 
 def setImageDim(width = 400, height = 300):
     global IMAGE_HEIGHT, IMAGE_WIDTH

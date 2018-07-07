@@ -49,7 +49,7 @@ BETA = 7.5
 # Constant to put more emphasis on style loss.
 ALPHA = 100
 # Constant to put more emphasis on the total variation loss.
-GAMMA = 1
+GAMMA = 200
 
 MEAN_VALUES = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3))
 

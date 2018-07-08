@@ -87,7 +87,7 @@ def save_image(path, image):
     scipy.misc.imsave(path, image)
 
 def show_image(image):
-    plt.imshow(image)
+    plt.imshow(image.reshape(image.shape[1:]))
 
 
 def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH, pool_type='avg'):
@@ -290,6 +290,7 @@ def style_loss_func(sess, model):
 
 def tv_loss_func(sess, model):
     return tf.reduce_sum(tf.image.total_variation(model['input']))
+
 
 def init(width = 400, height = 300, beta=7.5, alpha=100, gamma=200):
     global IMAGE_HEIGHT, IMAGE_WIDTH, BETA, ALPHA, GAMMA

@@ -93,6 +93,7 @@ def show_image(image):
     image = image[0]
     image = np.clip(image, 0, 255).astype('uint8')
     plt.imshow(image)
+    plt.close()
 
 
 def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH, pool_type='avg'):

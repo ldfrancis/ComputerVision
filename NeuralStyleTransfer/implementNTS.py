@@ -11,6 +11,7 @@ import time
 import numpy as np
 import scipy.io
 import scipy.misc
+import skimage
 import tensorflow as tf
 from .utils import cwd, download_if_not_exists
 
@@ -67,6 +68,7 @@ def generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio):
 
 def load_image(path):
     image = scipy.misc.imread(path)
+    image = skimage.transform.resize(image, (IMAGE_HEIGHT, IMAGE_WIDTH, COLOR_CHANNELS))
     # Resize the image for convnet input, there is no change but just
     # add an extra dimension.
     image = np.reshape(image, ((1,) + image.shape))

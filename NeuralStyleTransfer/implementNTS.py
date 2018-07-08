@@ -11,7 +11,7 @@ import time
 import numpy as np
 import scipy.io
 import scipy.misc
-import skimage
+import skimage.transform
 import tensorflow as tf
 from .utils import cwd, download_if_not_exists
 

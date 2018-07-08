@@ -13,6 +13,7 @@ import scipy.io
 import scipy.misc
 import skimage.transform
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from .utils import cwd, download_if_not_exists
 
 
@@ -84,6 +85,9 @@ def save_image(path, image):
     image = image[0]
     image = np.clip(image, 0, 255).astype('uint8')
     scipy.misc.imsave(path, image)
+
+def show_image(image):
+    plt.imshow(image)
 
 
 def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH, pool_type='avg'):
@@ -221,8 +225,6 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH, pool_type='avg'):
     return graph
 
 
-
-
 def content_loss_func(sess, model):
     """
     Content loss function as defined in the paper.
@@ -288,10 +290,6 @@ def style_loss_func(sess, model):
 
 def tv_loss_func(sess, model):
     return tf.reduce_sum(tf.image.total_variation(model['input']))
-    # x = sess.run(model['input'])
-    # a = tf.square(x[:, :x.shape[1]-1, :x.shape[2]-1, :] - x[:, 1:, :x.shape[2]-1, :])
-    # b = tf.square(x[:, :x.shape[1]-1, :x.shape[2]-1, :] - x[:, :x.shape[1]-1, 1:, :])
-    # return tf.reduce_sum(tf.pow(a + b, 1.25))
 
 def init(width = 400, height = 300, beta=7.5, alpha=100, gamma=200):
     global IMAGE_HEIGHT, IMAGE_WIDTH, BETA, ALPHA, GAMMA
@@ -350,21 +348,21 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         for i in range(1, iterations+1):
             sess.run(train_step)
             if i % 20 == 0:
-                # Jt, Jc, Js, Jv = sess.run([total_loss, content_loss, style_loss, total_variational_loss])
-                # print("Iteration " + str(i) + " :")
-                # print("total cost = " + str(Jt))
-                # print("content cost = " + str(Jc))
-                # print("style cost = " + str(Js))
-                # print("total variational loss = ", str(Jv))
+                Jt, Jc, Js, Jv = sess.run([total_loss, content_loss, style_loss, total_variational_loss])
+                print("Iteration " + str(i) + " :")
+                print("total cost = " + str(Jt))
+                print("content cost = " + str(Jc))
+                print("style cost = " + str(Js))
+                print("total variational loss = ", str(Jv))
 
                 if i % 100 == 0:
                     generated_image = sess.run(model['input'])
                     # save current generated image in the "/output" directory
                     save_image(cwd+"output/" + str(i) + ".png", generated_image)
+                    save_image(cwd+'output/generated_image.jpg', generated_image)
+
+                    show_image(generated_image)
 
                 print("Time elapsed: ", time.time() - tic)
                 tic = time.time();
         sess.close()
-
-        # save last generated image
-        save_image(cwd+'output/generated_image.jpg', generated_image)

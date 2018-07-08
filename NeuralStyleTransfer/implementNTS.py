@@ -68,7 +68,7 @@ def generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio):
 
 def load_image(path):
     image = scipy.misc.imread(path)
-    image = skimage.transform.resize(image, (IMAGE_HEIGHT, IMAGE_WIDTH, COLOR_CHANNELS))
+    image = skimage.transform.resize(image, (IMAGE_HEIGHT, IMAGE_WIDTH, COLOR_CHANNELS), anti_aliasing=True)
     # Resize the image for convnet input, there is no change but just
     # add an extra dimension.
     image = np.reshape(image, ((1,) + image.shape))

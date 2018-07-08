@@ -7,10 +7,13 @@ And it uses the implementation provided by http://www.chioka.in/tensorflow-imple
 
 import os
 import sys
+import time
 import numpy as np
 import scipy.io
 import scipy.misc
+import skimage.transform
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from .utils import cwd, download_if_not_exists
 
 
@@ -30,7 +33,7 @@ STYLE_IMAGE = simage
 # Content image to use.
 # CONTENT_IMAGE = 'images/hong_kong_2.jpg'
 CONTENT_IMAGE = cimage
-# Image dimensions constants. 
+# Image dimensions constants.
 IMAGE_WIDTH = 800
 IMAGE_HEIGHT = 600
 COLOR_CHANNELS = 3
@@ -44,13 +47,15 @@ NOISE_RATIO = 0.6
 # Number of iterations to run.
 ITERATIONS = 5000
 # Constant to put more emphasis on content loss.
-BETA = 5
+BETA = 7.5
 # Constant to put more emphasis on style loss.
 ALPHA = 100
+# Constant to put more emphasis on the total variation loss.
+GAMMA = 200
 
 MEAN_VALUES = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3))
 
-def generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio = NOISE_RATIO):
+def generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio):
     """
     Returns a noise image intermixed with the content image at a certain ratio.
     """
@@ -64,6 +69,8 @@ def generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio =
 
 def load_image(path):
     image = scipy.misc.imread(path)
+    image = 255 * skimage.transform.resize(image, (IMAGE_HEIGHT, IMAGE_WIDTH, COLOR_CHANNELS))
+    # image = image.astype(np.uint8)
     # Resize the image for convnet input, there is no change but just
     # add an extra dimension.
     image = np.reshape(image, ((1,) + image.shape))
@@ -79,8 +86,17 @@ def save_image(path, image):
     image = np.clip(image, 0, 255).astype('uint8')
     scipy.misc.imsave(path, image)
 
+def show_image(image):
+    # Output should add back the mean.
+    image = image + MEAN_VALUES
+    # Get rid of the first useless dimension, what remains is the image.
+    image = image[0]
+    image = np.clip(image, 0, 255).astype('uint8')
+    plt.imshow(image)
+    plt.close()
 
-def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
+
+def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH, pool_type='avg'):
     """
     Returns a model for the purpose of 'painting' the picture.
     Takes only the convolution layer weights and wrap using the TensorFlow
@@ -91,7 +107,7 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
         0 is conv1_1 (3, 3, 3, 64)
         1 is relu
         2 is conv1_2 (3, 3, 64, 64)
-        3 is relu    
+        3 is relu
         4 is maxpool
         5 is conv2_1 (3, 3, 64, 128)
         6 is relu
@@ -132,11 +148,11 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
         41 is fullyconnected (1, 1, 4096, 1000)
         42 is softmax
     """
-    
+
     vgg = scipy.io.loadmat(path)
 
     vgg_layers = vgg['layers']
-    
+
     def _weights(layer, expected_layer_name):
         """
         Return the weights and bias from the VGG model for a given layer.
@@ -174,40 +190,45 @@ def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH):
         """
         return _relu(_conv2d(prev_layer, layer, layer_name))
 
-    def _avgpool(prev_layer):
+    def _pool(prev_layer, pool_type):
         """
-        Return the AveragePooling layer.
+        Return the pooling layer.
+
+        Tip:
+            use 'avg' for styles like the 'Starry Night'
+            use 'max' for sharper styles
         """
-        return tf.nn.avg_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+        if pool_type == 'avg':
+            return tf.nn.avg_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+        else:
+            return tf.nn.max_pool(prev_layer, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
     # Constructs the graph model.
     graph = {}
-    graph['input']   = tf.Variable(np.zeros((1, IMAGE_HEIGHT, IMAGE_WIDTH, COLOR_CHANNELS)), dtype = 'float32')
+    graph['input']    = tf.Variable(np.zeros((1, IMAGE_HEIGHT, IMAGE_WIDTH, COLOR_CHANNELS)), dtype = 'float32')
     graph['conv1_1']  = _conv2d_relu(graph['input'], 0, 'conv1_1')
     graph['conv1_2']  = _conv2d_relu(graph['conv1_1'], 2, 'conv1_2')
-    graph['avgpool1'] = _avgpool(graph['conv1_2'])
-    graph['conv2_1']  = _conv2d_relu(graph['avgpool1'], 5, 'conv2_1')
+    graph['pool1']    = _pool(graph['conv1_2'], pool_type=pool_type)
+    graph['conv2_1']  = _conv2d_relu(graph['pool1'], 5, 'conv2_1')
     graph['conv2_2']  = _conv2d_relu(graph['conv2_1'], 7, 'conv2_2')
-    graph['avgpool2'] = _avgpool(graph['conv2_2'])
-    graph['conv3_1']  = _conv2d_relu(graph['avgpool2'], 10, 'conv3_1')
+    graph['pool2']    = _pool(graph['conv2_2'], pool_type=pool_type)
+    graph['conv3_1']  = _conv2d_relu(graph['pool2'], 10, 'conv3_1')
     graph['conv3_2']  = _conv2d_relu(graph['conv3_1'], 12, 'conv3_2')
     graph['conv3_3']  = _conv2d_relu(graph['conv3_2'], 14, 'conv3_3')
     graph['conv3_4']  = _conv2d_relu(graph['conv3_3'], 16, 'conv3_4')
-    graph['avgpool3'] = _avgpool(graph['conv3_4'])
-    graph['conv4_1']  = _conv2d_relu(graph['avgpool3'], 19, 'conv4_1')
+    graph['pool3']    = _pool(graph['conv3_4'], pool_type=pool_type)
+    graph['conv4_1']  = _conv2d_relu(graph['pool3'], 19, 'conv4_1')
     graph['conv4_2']  = _conv2d_relu(graph['conv4_1'], 21, 'conv4_2')
     graph['conv4_3']  = _conv2d_relu(graph['conv4_2'], 23, 'conv4_3')
     graph['conv4_4']  = _conv2d_relu(graph['conv4_3'], 25, 'conv4_4')
-    graph['avgpool4'] = _avgpool(graph['conv4_4'])
-    graph['conv5_1']  = _conv2d_relu(graph['avgpool4'], 28, 'conv5_1')
+    graph['pool4']    = _pool(graph['conv4_4'], pool_type=pool_type)
+    graph['conv5_1']  = _conv2d_relu(graph['pool4'], 28, 'conv5_1')
     graph['conv5_2']  = _conv2d_relu(graph['conv5_1'], 30, 'conv5_2')
     graph['conv5_3']  = _conv2d_relu(graph['conv5_2'], 32, 'conv5_3')
     graph['conv5_4']  = _conv2d_relu(graph['conv5_3'], 34, 'conv5_4')
-    graph['avgpool5'] = _avgpool(graph['conv5_4'])
-    
+    graph['pool5']    = _pool(graph['conv5_4'], pool_type=pool_type)
+
     return graph
-
-
 
 
 def content_loss_func(sess, model):
@@ -221,7 +242,7 @@ def content_loss_func(sess, model):
         M = p.shape[1] * p.shape[2]
         # Interestingly, the paper uses this form instead:
         #
-        #   0.5 * tf.reduce_sum(tf.pow(x - p, 2)) 
+        #   0.5 * tf.reduce_sum(tf.pow(x - p, 2))
         #
         # But this form is very slow in "painting" and thus could be missing
         # out some constants (from what I see in other source code), so I'll
@@ -273,13 +294,20 @@ def style_loss_func(sess, model):
     loss = sum([W[l] * E[l] for l in range(len(layers))])
     return loss
 
-def setImageDim(width = 400, height = 300):
-    global IMAGE_HEIGHT, IMAGE_WIDTH
+def tv_loss_func(sess, model):
+    return tf.reduce_sum(tf.image.total_variation(model['input']))
+
+
+def init(width = 400, height = 300, beta=7.5, alpha=100, gamma=200):
+    global IMAGE_HEIGHT, IMAGE_WIDTH, BETA, ALPHA, GAMMA
     IMAGE_HEIGHT = height
     IMAGE_WIDTH = width
-    
+    BETA = beta
+    ALPHA = alpha
+    GAMMA = gamma
 
-def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE):
+
+def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE, noise_ratio=NOISE_RATIO, pool_type='avg'):
     with tf.Session() as sess:
 
         download_if_not_exists(file_name, url)
@@ -287,14 +315,15 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         # Load the images.
         content_image = load_image(content_image)
         style_image = load_image(style_image)
+
         # Load the model.
-        model = load_vgg_model(cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat", IMAGE_HEIGHT, IMAGE_WIDTH)
+        model = load_vgg_model(cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat", IMAGE_HEIGHT, IMAGE_WIDTH, pool_type)
 
         # Generate the white noise and content presentation mixed image
         # which will be the basis for the algorithm to "paint".
-        input_image = generate_noise_image(content_image,IMAGE_HEIGHT,IMAGE_WIDTH)
+        input_image = generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio)
 
-        sess.run(tf.initialize_all_variables())
+        sess.run(tf.global_variables_initializer())
         # Construct content_loss using content_image.
         sess.run(model['input'].assign(content_image))
         content_loss = content_loss_func(sess, model)
@@ -303,8 +332,11 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         sess.run(model['input'].assign(style_image))
         style_loss = style_loss_func(sess, model)
 
+        sess.run(model['input'].assign(input_image))
+        total_variational_loss = tv_loss_func(sess, model)
+
         # Instantiate equation 7 of the paper.
-        total_loss = BETA * content_loss + ALPHA * style_loss
+        total_loss = BETA * content_loss + ALPHA * style_loss + GAMMA * total_variational_loss
 
         # From the paper: jointly minimize the distance of a white noise image
         # from the content representation of the photograph in one layer of
@@ -316,39 +348,28 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         optimizer = tf.train.AdamOptimizer(2.0)
         train_step = optimizer.minimize(total_loss)
 
-        sess.run(tf.initialize_all_variables())
+        sess.run(tf.global_variables_initializer())
         sess.run(model['input'].assign(input_image))
-        for i in range(iterations): 
+
+        tic = time.time()
+        for i in range(1, iterations+1):
             sess.run(train_step)
-            if i%20 == 0:
-                '''# Print every 20 iteration.
-                mixed_image = sess.run(model['input'])
-                print('Iteration %d' % (it))
-                print('sum : ', sess.run(tf.reduce_sum(mixed_image)))
-                print('cost: ', sess.run(total_loss))
-
-                if not os.path.exists(OUTPUT_DIR):
-                    os.mkdir(OUTPUT_DIR)
-
-                filename = 'output/%d.png' % (it)
-                save_image(filename, mixed_image)'''
-
-                Jt, Jc, Js = sess.run([total_loss, content_loss, style_loss])
+            if i % 20 == 0:
+                Jt, Jc, Js, Jv = sess.run([total_loss, content_loss, style_loss, total_variational_loss])
                 print("Iteration " + str(i) + " :")
                 print("total cost = " + str(Jt))
                 print("content cost = " + str(Jc))
                 print("style cost = " + str(Js))
-                
-                
-                
-                generated_image = sess.run(model['input'])
-                # save current generated image in the "/output" directory
-                save_image(cwd+"output/" + str(i) + ".png", generated_image)
+                print("total variational loss = ", str(Jv))
 
-        
+                if i % 100 == 0:
+                    generated_image = sess.run(model['input'])
+                    # save current generated image in the "/output" directory
+                    save_image(cwd+"output/" + str(i) + ".jpg", generated_image)
+                    save_image(cwd+'output/generated_image.jpg', generated_image)
+
+                    show_image(generated_image)
+
+                print("Time elapsed: ", time.time() - tic)
+                tic = time.time();
         sess.close()
-
-        
-        # save last generated image
-        save_image(cwd+'output/generated_image.jpg', generated_image)
-

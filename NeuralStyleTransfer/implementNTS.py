@@ -309,6 +309,9 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
         # Load the images.
         content_image = load_image(content_image)
         style_image = load_image(style_image)
+
+        print("content image shape : ", content_image.shape)
+        print("style image shape : ", style_image.shape)
         # Load the model.
         model = load_vgg_model(cwd+"pretrained-model/imagenet-vgg-verydeep-19.mat", IMAGE_HEIGHT, IMAGE_WIDTH, pool_type)
 

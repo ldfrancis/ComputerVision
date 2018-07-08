@@ -87,7 +87,12 @@ def save_image(path, image):
     scipy.misc.imsave(path, image)
 
 def show_image(image):
-    plt.imshow(image.reshape(image.shape[1:]))
+    # Output should add back the mean.
+    image = image + MEAN_VALUES
+    # Get rid of the first useless dimension, what remains is the image.
+    image = image[0]
+    image = np.clip(image, 0, 255).astype('uint8')
+    plt.imshow(image)
 
 
 def load_vgg_model(path, IMAGE_HEIGHT, IMAGE_WIDTH, pool_type='avg'):
@@ -359,7 +364,7 @@ def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_
                 if i % 100 == 0:
                     generated_image = sess.run(model['input'])
                     # save current generated image in the "/output" directory
-                    save_image(cwd+"output/" + str(i) + ".png", generated_image)
+                    save_image(cwd+"output/" + str(i) + ".jpg", generated_image)
                     save_image(cwd+'output/generated_image.jpg', generated_image)
 
                     show_image(generated_image)

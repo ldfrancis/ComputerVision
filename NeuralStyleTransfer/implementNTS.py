@@ -306,8 +306,13 @@ def init(width = 400, height = 300, beta=7.5, alpha=100, gamma=200):
     ALPHA = alpha
     GAMMA = gamma
 
+def setImageDim(width = 400, height = 300):
+    init(width=width, height=height)
 
-def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE, noise_ratio=NOISE_RATIO, pool_type='avg'):
+
+noise_ratio=NOISE_RATIO
+pool_type='avg'
+def run(iterations = ITERATIONS, content_image=CONTENT_IMAGE, style_image=STYLE_IMAGE):
     with tf.Session() as sess:
 
         download_if_not_exists(file_name, url)

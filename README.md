@@ -1,7 +1,7 @@
 # ComputerVision
 Implementations of algorithms and operations used in Computer Vision
 
-## Neural Style Transfer
+- ## Neural Style Transfer
 
 To use the Neural Style transfer implementation:
 <table class="tfo-notebook-buttons" align="left"><td>

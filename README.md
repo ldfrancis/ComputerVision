@@ -4,6 +4,10 @@ Implementations of algorithms and operations used in Computer Vision
 ## Neural Style Transfer
 
 To use the Neural Style transfer implementation:
+<table class="tfo-notebook-buttons" align="left"><td>
+<a target="_blank"  href="https://colab.research.google.com/github/ldfrancis/ComputerVision/blob/master/easyNST%20on%20google%20colab.ipynb#scrollTo=6ZvFUNuUalN4|">
+    <img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Run in Google Colab</a>  
+</td>
 
 ```python
 from NeuralStyleTransfer import implementNTS as NST

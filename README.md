@@ -6,7 +6,8 @@ Implementations of algorithms and operations used in Computer Vision
 
 ## Algorithms
 - ### [Neural Style Transfer](https://github.com/ldfrancis/ComputerVision/tree/master/NeuralStyleTransfer)
-- ### [Faster RCNN](https://github.com/ldfrancis/ComputerVision/tree/master/FasterRCNN)
+- ### Object Detection
+  - ### [Faster RCNN](https://github.com/ldfrancis/ComputerVision/tree/master/FasterRCNN)
 
 
 <br/>

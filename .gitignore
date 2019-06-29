@@ -107,3 +107,6 @@ examples/
 styles_old/
 
 .DS_Store
+
+checkpoints/
+

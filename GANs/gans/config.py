@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import os
 
-base = Path(os.path.abspath(__file__)).parent
+base = (Path(os.path.abspath(__file__)).parent).parent
 data_path = base/'data'
 models_path = data_path/'models'
 

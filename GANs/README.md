@@ -12,3 +12,14 @@ To run a simple GAN training, use this on the terminal
 This trains the GAN for 60000 epochs. Results of generated images from sample epochs are saved in the folder,` data/checkpoints`
 
 From the results obtained by experimenting with this code, it is only after training for up to 40000 epochs on the MNIST data that the model starts to generate reasonable digits.
+
+## results
+here are some sample results for generating data from MNIST:
+
+Generated data after, 50 1000, 10000, and 30000 epochs of GAN training respectively:
+
+<img src="https://raw.githubusercontent.com/ldfrancis/ComputerVision/master/GANs/results/checkpoint50.png" alt="alt text" width="200" height="200"><img src="https://raw.githubusercontent.com/ldfrancis/ComputerVision/master/GANs/results/checkpoint1000.png" alt="alt text" width="200" height="200"><img src="https://raw.githubusercontent.com/ldfrancis/ComputerVision/master/GANs/results/checkpoint10000.png" alt="alt text" width="200" height="200"><img src="https://raw.githubusercontent.com/ldfrancis/ComputerVision/master/GANs/results/checkpoint30000.png" alt="alt text" width="200" height="200">
+
+Generated data after, 40000 and 50000 epochs of GAN training respectively:
+
+<img src="https://raw.githubusercontent.com/ldfrancis/ComputerVision/master/GANs/results/checkpoint40000.png" alt="alt text" width="200" height="200"><img src="https://raw.githubusercontent.com/ldfrancis/ComputerVision/master/GANs/results/checkpoint50000.png" alt="alt text" width="200" height="200">

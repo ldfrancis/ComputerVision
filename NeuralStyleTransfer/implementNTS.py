@@ -15,6 +15,8 @@ import skimage.transform
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from .utils import cwd, download_if_not_exists
+import imageio
+import matplotlib.pyplot as plt
 
 
 cimage = cwd+"images/louvre_small.jpg"
@@ -68,7 +70,7 @@ def generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, noise_ratio):
     return input_image
 
 def load_image(path):
-    image = scipy.misc.imread(path)
+    image = plt.imread(path)
     image = 255 * skimage.transform.resize(image, (IMAGE_HEIGHT, IMAGE_WIDTH, COLOR_CHANNELS))
     # image = image.astype(np.uint8)
     # Resize the image for convnet input, there is no change but just
@@ -84,7 +86,7 @@ def save_image(path, image):
     # Get rid of the first useless dimension, what remains is the image.
     image = image[0]
     image = np.clip(image, 0, 255).astype('uint8')
-    scipy.misc.imsave(path, image)
+    plt.imsave(path, image)
 
 def show_image(image):
     # Output should add back the mean.
